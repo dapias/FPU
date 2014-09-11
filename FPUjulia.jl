@@ -1,18 +1,16 @@
 # # Integrador que utiliza el tiempo inicial, el arreglo inicial, el campo vectorial, el paso y el número de pasos para integrar la ecuación ordinario dada por \dot{x} = F(x), considerando que es una ecuación diferencial autónoma.
 using PyPlot
+pygui(true)
 
-function rungeK(t_init,x_init,campo,h,n)
+
+function rungeK(x_init,campo,h)
 	state = x_init
-	t = t_init
-	for i in 1:n
 		k1 = campo(state)
 		k2 = campo(state + .5*h*k1)
 		k3 = campo(state + .5*h*k2)
 		k4 = campo(state + h*k3)
 		phi = (1/6.)*k1 + (1/3.)*k2 + (1/3.)*k3 + (1/6.)*k4
 		state = state+h*phi
-		t=t+h
-  end
 	return state
 end
 
@@ -33,7 +31,7 @@ function campoFPU(vector, alpha=0.25, N =2)
 end
 
 
-
+#Generador de condiciones iniciales en el primer modo normal
 
 function generarics(N)
   ics = zeros(2N)
@@ -43,13 +41,13 @@ function generarics(N)
   end
   ics
 end
-    #omegak[I] = 4*(sin(pi*(I+1)/2/N))**2 # Frecuencias de modo
 
-function runFPU(x_init,t_init, campo, h, n,N)
+
+
+function runFPU(x_init, scampo, h, n,N)
   q = x_init
-  t = t_init
   for i in 1:n
-    q = hcat(q,rungeK(t,q[:,end],campo,h,1))
+    q = hcat(q,rungeK(q[:,end],campo,h))
   end
   Q = transformada(q[:,1],N)
   for i in 2:n+1
@@ -74,6 +72,7 @@ end
   end
 
 
+#Transformada discreta con seno.
 
 function transformada(vector,N)
   l = length(vector)
@@ -89,3 +88,6 @@ end
 
 
 
+x = generarics(2)
+campo = campoFPU
+runFPU(x,campo, 0.001, 1000,2)

@@ -49,18 +49,24 @@ function runFPU(x_init, scampo, h, n,N)
   for i in 1:n
     q = hcat(q,rungeK(q[:,end],campo,h))
   end
-  Q = transformada(q[:,1],N)
+  coordq =  q[1:N,:]
+  veloq =  q[N+1:2N,:]
+  coordQ = transformada(coordq[:,1],N)
   for i in 2:n+1
-    w =transformada(q[:,i],N)
-    Q = hcat(Q,w)
+    w =transformada(coordq[:,i],N)
+    coordQ = hcat(coordQ,w)
   end
+  veloQ = transformada(veloq[:,1],N)
+  for i in 2:n+1
+    w =transformada(veloq[:,i],N)
+    veloQ = hcat(veloQ,w)
+  end
+
   tiempo = [h*i for i in 0:n]
-  coord =  Q[1:N,:]
-  velo =  Q[N+1:2N,:]
   omegak = [2*(sin(pi*k/(2*(N+1)))) for k in 1:N] # Frecuencias de modo
-  energia = [((coord[k,1]).^2*omegak[k]^2 + (velo[k,1]).^2)/2. for k in 1:N]
+  energia = [((coordQ[k,1]).^2*omegak[k]^2 + (veloQ[k,1]).^2)/2. for k in 1:N]
     for i in 2:n+1
-    energia = hcat(energia, [((coord[k,i]).^2*omegak[k]^2 + (velo[k,i]).^2)/2. for k in 1:N])
+    energia = hcat(energia, [((coordQ[k,i]).^2*omegak[k]^2 + (veloQ[k,i]).^2)/2. for k in 1:N])
   end
   plotEnergia(energia,tiempo,N)
 end

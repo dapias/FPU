@@ -1,4 +1,5 @@
 # # Integrador que utiliza el tiempo inicial, el arreglo inicial, el campo vectorial, el paso y el número de pasos para integrar la ecuación ordinario dada por \dot{x} = F(x), considerando que es una ecuación diferencial autónoma.
+
 using PyPlot
 pygui(true)
 
@@ -48,30 +49,23 @@ function runFPU(x_init, campo, h, n,N)
   q = x_init
   omegak = [2*(sin(pi*k/(2*(N+1)))) for k in 1:N] # Frecuencias de modo
   tiempo = [h*i for i in 0:n]
-
-
-
-  coordQ = transformada(q[1:N],N)
-  veloQ = transformada(q[N+1:end],N)
+  matriz = crearMatriz(N)
+  coordQ = transformada(q[1:N],matriz)
+  veloQ = transformada(q[N+1:end],matriz)
   energia = [((coordQ[k]).^2*omegak[k]^2 + (veloQ[k]).^2)/2. for k in 1:N]
 
   for i in 1:n
-
   q = rungeK(q,campo,h)
-  coordQ = transformada(q[1:N],N)
-  veloQ = transformada(q[N+1:end],N)
+  coordQ = transformada(q[1:N],matriz)
+  veloQ = transformada(q[N+1:end],matriz)
   energia = hcat(energia,[((coordQ[k]).^2*omegak[k]^2 + (veloQ[k]).^2)/2. for k in 1:N])
   end
-
-
-
-#    for i in 2:n+1
-#    energia = hcat(energia, [((coordQ[k,i]).^2*omegak[k]^2 + (veloQ[k,i]).^2)/2. for k in 1:N])
-#  end
 
   plotEnergia(energia,tiempo,N )
 end
 
+
+#Función para dibujar la energía de cada modo.
 function plotEnergia(energia,tiempo, N)
 for i in 1:N
     plot(tiempo, [x::Float64 for x in energia[i,:]])
@@ -81,18 +75,22 @@ end
 
 #Transformada discreta con seno.
 
-function transformada(vector,N)
-  l = length(vector)
-  matriz = eye(l)
-  for j in 1:l
-      for i in 1:l
-            matriz[j,i] = sqrt(2/(N+1))*sin(i*j*pi/(N+1))
+function crearMatriz(N)
+  matriz = eye(N)
+  for j in 1:N
+      for i in 1:N
+            # matriz[j,i] = sqrt(2/(N+1))*sin(i*j*pi/(N+1))
+            matriz[j,i] = sin(i*j*pi/(N+1))
         end
     end
+matriz
+  end
+
+
+
+function transformada(vector,matriz)
     matriz*vector
 end
-
-
 
 
 

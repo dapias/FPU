@@ -37,7 +37,8 @@ end
 function generarics(N)
   ics = zeros(2N)
   for i in 1:N
-    ics[i] = (2/(N+1))^(1/2)*sin(i*pi/(N+1))
+    #ics[i] = (2/(N+1))^(1/2)*sin(i*pi/(N+1)) Dar toda la energía al primer modo
+    ics[i] = sin(pi*(i)/N) #Energía repartida pero concentrada en el primer modo
     ics[N+i] = 0
   end
   ics
@@ -48,7 +49,9 @@ end
 function runFPU(x_init, campo, h, n,N)
   q = x_init
   omegak = [2*(sin(pi*k/(2*(N+1)))) for k in 1:N] # Frecuencias de modo
-  tiempo = [h*i for i in 0:n]
+  tiempo = h*[i for i in 0:n]
+# tiempo = omegak[1]/(2*pi)*h*[i for i in 0:n] En términos de ciclos de la primera frecuencia
+
   matriz = crearMatriz(N)
   coordQ = transformada(q[1:N],matriz)
   veloQ = transformada(q[N+1:end],matriz)
@@ -79,8 +82,8 @@ function crearMatriz(N)
   matriz = eye(N)
   for j in 1:N
       for i in 1:N
-            # matriz[j,i] = sqrt(2/(N+1))*sin(i*j*pi/(N+1))
-            matriz[j,i] = sin(i*j*pi/(N+1))
+             matriz[j,i] = sqrt(2/(N+1))*sin(i*j*pi/(N+1))
+            #matriz[j,i] = sin(i*j*pi/(N+1))
         end
     end
 matriz
@@ -94,6 +97,3 @@ end
 
 
 
-x = generarics(2)
-campo = campoFPU
-runFPU(x,campo, 0.001, 1000,2)

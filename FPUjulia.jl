@@ -2,7 +2,6 @@
 using PyPlot
 pygui(true)
 
-
 function rungeK(x_init,campo,h)
 	state = x_init
 		k1 = campo(state)
@@ -16,8 +15,10 @@ end
 
 # Campo vectorial para FPU
 
-function campoFPU(vector, alpha=0.25, N =2)
+function campoFPU(vector, alpha=0.25)
   y = vector
+  len = length(vector)
+  N = iceil(len/2)
   D = zeros(2N)
     D[1] = vector[N+1]
     D[N] = vector[2N]
@@ -29,7 +30,6 @@ function campoFPU(vector, alpha=0.25, N =2)
   end
     return D
 end
-
 
 #Generador de condiciones iniciales en el primer modo normal
 
@@ -44,31 +44,32 @@ end
 
 
 
-function runFPU(x_init, scampo, h, n,N)
+function runFPU(x_init, campo, h, n,N)
   q = x_init
+  omegak = [2*(sin(pi*k/(2*(N+1)))) for k in 1:N] # Frecuencias de modo
+  tiempo = [h*i for i in 0:n]
+
+
+
+  coordQ = transformada(q[1:N],N)
+  veloQ = transformada(q[N+1:end],N)
+  energia = [((coordQ[k]).^2*omegak[k]^2 + (veloQ[k]).^2)/2. for k in 1:N]
+
   for i in 1:n
-    q = hcat(q,rungeK(q[:,end],campo,h))
-  end
-  coordq =  q[1:N,:]
-  veloq =  q[N+1:2N,:]
-  coordQ = transformada(coordq[:,1],N)
-  for i in 2:n+1
-    w =transformada(coordq[:,i],N)
-    coordQ = hcat(coordQ,w)
-  end
-  veloQ = transformada(veloq[:,1],N)
-  for i in 2:n+1
-    w =transformada(veloq[:,i],N)
-    veloQ = hcat(veloQ,w)
+
+  q = rungeK(q,campo,h)
+  coordQ = transformada(q[1:N],N)
+  veloQ = transformada(q[N+1:end],N)
+  energia = hcat(energia,[((coordQ[k]).^2*omegak[k]^2 + (veloQ[k]).^2)/2. for k in 1:N])
   end
 
-  tiempo = [h*i for i in 0:n]
-  omegak = [2*(sin(pi*k/(2*(N+1)))) for k in 1:N] # Frecuencias de modo
-  energia = [((coordQ[k,1]).^2*omegak[k]^2 + (veloQ[k,1]).^2)/2. for k in 1:N]
-    for i in 2:n+1
-    energia = hcat(energia, [((coordQ[k,i]).^2*omegak[k]^2 + (veloQ[k,i]).^2)/2. for k in 1:N])
-  end
-  plotEnergia(energia,tiempo,N)
+
+
+#    for i in 2:n+1
+#    energia = hcat(energia, [((coordQ[k,i]).^2*omegak[k]^2 + (veloQ[k,i]).^2)/2. for k in 1:N])
+#  end
+
+  plotEnergia(energia,tiempo,N )
 end
 
 function plotEnergia(energia,tiempo, N)
@@ -90,6 +91,7 @@ function transformada(vector,N)
     end
     matriz*vector
 end
+
 
 
 

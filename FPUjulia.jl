@@ -16,7 +16,7 @@ end
 
 # Campo vectorial para FPU
 
-function campoFPU(vector, alpha=0.25)
+function campoFPU(vector, alpha)
   y = vector
   len = length(y)
   N = iceil(len/2)
@@ -73,6 +73,9 @@ function plotEnergia(energia,tiempo, N)
 for i in 1:N
     plot(tiempo, [x::Float64 for x in energia[i,:]])
 end
+      xlabel("Tiempo")
+    ylabel("Energia")
+    title(L"FPU-$\alpha$")
   end
 
 

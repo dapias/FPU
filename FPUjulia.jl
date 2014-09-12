@@ -18,11 +18,11 @@ end
 
 function campoFPU(vector, alpha=0.25)
   y = vector
-  len = length(vector)
+  len = length(y)
   N = iceil(len/2)
   D = zeros(2N)
-    D[1] = vector[N+1]
-    D[N] = vector[2N]
+    D[1] = y[N+1]
+    D[N] = y[2N]
     D[N+1] = y[2]-2y[1]+alpha*((y[2]-y[1])^2 -(y[1])^2)
     D[2N] = y[N-1]-2*y[N]+alpha*((y[N])^2-(y[N]-y[N-1])^2)
     for i in 2:N-1

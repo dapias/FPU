@@ -1,5 +1,9 @@
-N = 32  #Número de partículas
-n = 30000 #numero de pasos
+include("FPUtaylor.jl")
+
+#ordenTaylor = 28  #Valor por defecto: 28
+#epsAbs = 1.0e-20  Valor por defecto: 1.0e-20
+N = 2  #Número de partículas (FPU:32)
+n = 3000 #numero de pasos, número de pasos recomendado para 32 partículas: 30000
 alpha = 0.25 #Parámetro de interacción (0.25 en el trabajo FPU)
 
 x = generarics(N)

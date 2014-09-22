@@ -1,6 +1,8 @@
 # Solución del problema FPU usando un integrador de Taylor.
 
 using TaylorSeries
+using PyCall
+pygui(:qt)
 using PyPlot
 pygui(true)
 
@@ -120,6 +122,7 @@ end
 
 
 #Función para dibujar la energía de cada modo.
+
 function plotEnergia(energia,tiempo, N)
   for i in 1:N
     plot(tiempo[1:end-1], [x::Float64 for x in energia[i,:]][1:end-1])
